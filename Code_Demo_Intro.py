@@ -2,7 +2,17 @@
 """
 Created on Mon Jan 29 18:20:12 2024
 
-@author: JavadiR
+@author: Matthew Luu
+
+Description: Introduction to python simple scripts to showcase various
+datatypes, structures, and functions
+
+Key things to note:
+    data types: int, flt, string
+    data structures: list, dictionary
+    data frames: pandas structure for easy plotting
+    
+#%% seperates sections
 """
 import numpy as np
 import pandas as pd
@@ -56,6 +66,6 @@ xyz_df = pd.DataFrame(xyz_dict)
 ax = xyz_df.plot.bar(x='student', y='gpa', rot=0)
 ax.hlines(gpa_avg, 6,-1, linestyles='dashed',color='k')
 ax.annotate('average',(-0.4,gpa_avg+0.2))
-
+plt.tight_layout()
 
 

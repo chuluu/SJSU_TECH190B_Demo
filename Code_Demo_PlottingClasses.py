@@ -2,13 +2,33 @@
 """
 Created on Mon Jan 29 16:56:18 2024
 
-@author: JavadiR
+@author: Matthew Luu
+
+Description: This code is used to take in solder pad data, then output
+a report quality tables and figures for a LaTex final document
+
+Capabilities:
+    Histogram:  value occurances
+    Line graph: Pad ID vs. specific value
+    Table: Outputs max, min, average, standard deviation
+    
+Key packages:
+    Pandas: Python data formating package
+    matplotlib: Plotting library
+    numpy: for general math
+    
+Other goals / notes:
+    The goal is to develop code that when the csv updates, you will just need
+    to hit the run button in order to continously get quality figures 
+    and tables that you don't need to adjust 
 """
 
 import pandas as pd
 import time
 import matplotlib.pyplot as plt
 import numpy as np
+# Set backend plotting
+%matplotlib qt 
 
 class Name():
     def __init__(self):
@@ -21,6 +41,13 @@ class Name():
         ...
 
 class BasicStatistics():
+    """
+    By: Matthew Luu
+    
+    This class does basic statistics, gets and average and standard deviation
+    More capabilities can be added...
+    
+    """
     def __init__(self):
         None
         
@@ -31,6 +58,15 @@ class BasicStatistics():
         return np.std(arr)
     
 class SolderPadDataProcessing(BasicStatistics):
+    """
+    By: Matthew Luu
+    
+    This class takes in csv data, converts it to a dictionary,
+    then obtains key variables, plots, and tables out of the csv
+    
+    Child Class: BasicStatistics for math throughout the work.
+    
+    """
     def __init__(self,csvname):
         self.csvname = csvname
         self.df = None
@@ -38,11 +74,17 @@ class SolderPadDataProcessing(BasicStatistics):
         self.KeyValues = None
         
     def get_df(self):
+        """
+        get pandas dataframe and title names on csv
+        """
         self.df = pd.read_csv(self.csvname)
         self.titles = list(self.df.head(0))
         return self.df,self.titles
     
     def df_to_dict(self):
+        """
+        convert dataframe to a dictionary.
+        """
         df_dict = {}
         for ii in range(len(self.titles)):
             df_dict.update({self.titles[ii] : list(self.df[self.titles[ii]])})
@@ -51,6 +93,9 @@ class SolderPadDataProcessing(BasicStatistics):
         return df_dict
     
     def ObtainKeyVariables(self,names):
+        """
+        get average and SD
+        """
         SD_dict = {}
         AVG_Dict = {}
         MAX_Dict = {}
@@ -90,7 +135,7 @@ class SolderPadDataProcessing(BasicStatistics):
             self.df[value].plot(kind = 'hist',color=color[ii])
             ii = ii+1
 
-        plt.legend(names) 
+        plt.legend(names,fancybox=True,frameon=True) 
         plt.xlabel('value')
         ii = 0
 
@@ -102,7 +147,9 @@ class SolderPadDataProcessing(BasicStatistics):
                 None
                     
             ii = ii+1
-                
+        plt.tight_layout()
+
+
         
     def ID_plotting(self,names):
         color = ['r','g','b','k','y']
@@ -113,29 +160,123 @@ class SolderPadDataProcessing(BasicStatistics):
         plt.legend(names) 
         plt.xlabel('Pad ID')
         plt.ylabel('Unit %')
+        plt.tight_layout()
+
+
         
-        
-        
-if __name__ == '__main__':
-    #csvname = "https://github.com/chuluu/SJSU_TECH190B_Demo/blob/main/Test_Data_noheader.csv?raw=true"
-    csvname = "Test_Data_noheader.csv"
+def set_size(width, fraction=1):
+    """Set figure dimensions to avoid scaling in LaTeX.
+
+    Parameters
+    ----------
+    width: float
+            Document textwidth or columnwidth in pts
+    fraction: float, optional
+            Fraction of the width which you wish the figure to occupy
+
+    Returns
+    -------
+    fig_dim: tuple
+            Dimensions of figure in inches
+    """
+    # Width of figure (in pts)
+    fig_width_pt = width * fraction
+
+    # Convert from pt to inches
+    inches_per_pt = 1 / 72.27
+
+    # Golden ratio to set aesthetic figure height
+    # https://disq.us/p/2940ij3
+    golden_ratio = (5**.5 - 1) / 2
+
+    # Figure width in inches
+    fig_width_in = fig_width_pt * inches_per_pt
+    # Figure height in inches
+    fig_height_in = fig_width_in * golden_ratio
+
+    fig_dim = (fig_width_in, fig_height_in)
+
+    return fig_dim
     
+
+def set_latex_standard():
+    # Using seaborn's style
+    plt.style.use('seaborn-v0_8')
+    width = 345
+    fig_dim = set_size(420)
+
+    tex_fonts = {
+        # Use LaTeX to write all text
+        "text.usetex": False,
+        "font.family": "serif",
+        # Use 10pt font in plots, to match 10pt font in document
+        "axes.labelsize": 12,
+        "font.size": 12,
+        # Make the legend/label fonts a little smaller
+        "legend.fontsize": 10,
+        "xtick.labelsize": 10,
+        "ytick.labelsize": 10
+    }
+    
+    plt.rcParams.update(tex_fonts)
+
+    return fig_dim
+
+def set_default():
+    # Using seaborn's style
+    plt.style.use('classic')
+    width = 345
+    fig_dim = [10,7]
+    tex_fonts = {
+        # Use LaTeX to write all text
+        "text.usetex": False,
+        "font.family": "sans",
+        # Use 10pt font in plots, to match 10pt font in document
+        "axes.labelsize": 20,
+        "font.size": 20,
+        # Make the legend/label fonts a little smaller
+        "legend.fontsize": 18,
+        "xtick.labelsize": 18,
+        "ytick.labelsize": 18
+    }
+    
+    plt.rcParams.update(tex_fonts)
+    
+    return fig_dim
+
+if __name__ == '__main__':
+    # Change where I am getting data from
+    csvname = "https://github.com/chuluu/SJSU_TECH190B_Demo/blob/main/Test_Data_noheader.csv?raw=true"
+    #csvname = "Test_Data_noheader.csv"
+    
+    
+    # Change figure defaults
+    fig_dim = set_latex_standard()
+    #fig_dim = set_default()
+    
+    # Set up main class
     SPD = SolderPadDataProcessing(csvname)
     SPD.get_df()
     print(SPD.titles)
     print('')
     
+    # Gather title names
     names = ['Volume(%)','Height(um)','Area(%)']
     names = [SPD.titles[2],SPD.titles[3],SPD.titles[4]]
     
+    
+    # Get key information
     df_dict = SPD.df_to_dict()
     SPD.ObtainKeyVariables(names)
     SPD.PrintTables(names)
+
+    # Plot
+    fig, ax = plt.subplots(figsize = fig_dim)
     SPD.ID_plotting(names)
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize = fig_dim)
     SPD.histogram(names,True)
 
-
+# Old plotting
 # =============================================================================
 # #%%
 # plt.close('all')
