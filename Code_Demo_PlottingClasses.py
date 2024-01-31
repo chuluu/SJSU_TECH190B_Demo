@@ -136,12 +136,12 @@ class SolderPadDataProcessing(BasicStatistics):
             ii = ii+1
 
         plt.legend(names,fancybox=True,frameon=True) 
-        plt.xlabel('value')
+        plt.xlabel('Value')
         ii = 0
 
         for value in names:
             if avg == True:
-                plt.vlines(self.KeyValues['Average'][value], 0,5000, linestyles='dashed',color=color[ii])
+                plt.vlines(self.KeyValues['Average'][value], 0,5000, linestyles='dashed',color=color[ii],linewidth=3.0)
                 #ax.annotate(value,(self.KeyValues['Average'][value]+5,4000))
             else:
                 None
@@ -157,6 +157,9 @@ class SolderPadDataProcessing(BasicStatistics):
         for value in names:
             self.df[value].plot(kind = 'line', x = 'ID',color=color[ii])
             ii = ii+1
+            
+        plt.hlines(self.KeyValues['Average'][value] - self.KeyValues['SD'][value], 0,13000, linewidth=6.0,linestyles='dashed',color='k')
+
         plt.legend(names) 
         plt.xlabel('Pad ID')
         plt.ylabel('Unit %')

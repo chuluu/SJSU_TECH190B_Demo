@@ -49,12 +49,12 @@ def set_default():
         "text.usetex": False,
         "font.family": "sans",
         # Use 10pt font in plots, to match 10pt font in document
-        "axes.labelsize": 20,
+        "axes.labelsize": 16,
         "font.size": 14,
         # Make the legend/label fonts a little smaller
-        "legend.fontsize": 18,
-        "xtick.labelsize": 18,
-        "ytick.labelsize": 18
+        "legend.fontsize": 12,
+        "xtick.labelsize": 12,
+        "ytick.labelsize": 12
     }
     
     plt.rcParams.update(tex_fonts)
@@ -160,7 +160,7 @@ class SolderPadDataProcessing(BasicStatistics):
 
         for value in names:
             if avg == True:
-                plt.vlines(self.KeyValues['Average'][value], 0,5000, linestyles='dashed',color=color[ii])
+                plt.vlines(self.KeyValues['Average'][value], 0,5000, linestyles='dashed',color=color[ii],linewidth=3.0)
                 #ax.annotate(value,(self.KeyValues['Average'][value]+5,4000))
             else:
                 None
@@ -174,9 +174,10 @@ class SolderPadDataProcessing(BasicStatistics):
         for value in names:
             self.df[value].plot(kind = 'line', x = 'ID',color=color[ii])
             ii = ii+1
+        plt.hlines(self.KeyValues['Average'][value] - self.KeyValues['SD'][value], 0,13000, linewidth=6.0,linestyles='dashed',color='k')
+
         plt.legend(names) 
         plt.xlabel('Pad ID')
-        plt.ylabel('Unit %')
         plt.tight_layout()
 
 def update_spd(ids):
